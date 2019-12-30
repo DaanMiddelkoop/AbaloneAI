@@ -1,0 +1,55 @@
+# depslib dependency file v1.0
+1577704069 source:/home/daan/projects/Abalone/main.cpp
+	<iostream>
+	<SFML/Graphics.hpp>
+	"board.h"
+	"move.h"
+	"ai.h"
+
+1577700229 source:/home/daan/projects/Abalone/src/board.cpp
+	<iostream>
+	<math.h>
+	"board.h"
+	"BitBoard.h"
+
+1577700212 /home/daan/projects/Abalone/include/board.h
+	<SFML/Graphics.hpp>
+	<vector>
+	"tile.h"
+	"move.h"
+	"team.h"
+
+1577630346 source:/home/daan/projects/Abalone/src/team.cpp
+	"team.h"
+
+1577630335 /home/daan/projects/Abalone/include/team.h
+	<cstdint>
+	<SFML/Graphics.hpp>
+	"BitBoard.h"
+
+1577480411 source:/home/daan/projects/Abalone/src/tile.cpp
+	"tile.h"
+
+1577480393 /home/daan/projects/Abalone/include/tile.h
+	<SFML/Graphics.hpp>
+	"team.h"
+
+1577478652 source:/home/daan/projects/Abalone/src/move.cpp
+	"move.h"
+
+1577624303 /home/daan/projects/Abalone/include/move.h
+
+1577630125 source:/home/daan/projects/Abalone/src/BitBoard.cpp
+	"BitBoard.h"
+
+1577630083 /home/daan/projects/Abalone/include/BitBoard.h
+	<stdint.h>
+
+1577703724 source:/home/daan/projects/Abalone/src/ai.cpp
+	<iostream>
+	"ai.h"
+
+1577703485 /home/daan/projects/Abalone/include/ai.h
+	"board.h"
+	"team.h"
+
