@@ -8,7 +8,7 @@ typedef unsigned __int128 uint128_t;
 
 static const uint128_t P1_SETUP = (uint128_t)0b111110000001111110000000111 << 82;
 static const uint128_t P2_SETUP = (uint128_t)0b11100000001111110000001111100 << 10;
-static uint128_t EDGES = ((uint128_t)0xFFFE0FC0F80F00E << 64) | 0xC0380F03E0FFFF;
+static uint128_t EDGES = ((uint128_t)0xFFFE0FC0F80F00E << 64) | 0xE01E03E07E0FFF;
 
 
 static const int DIRECTIONS[6] = {-12, -11, 1, 12, 11, -1};
@@ -94,7 +94,9 @@ bool Controller::checkScoreAndCleanEdges(uint128_t* board) {
         score = true;
     }
 
+
     *board &= ~EDGES;
+
     return score;
 }
 
@@ -129,11 +131,9 @@ int Controller::getBumps(Team* team, uint128_t* buffer, int buffer_len) {
                 new_board = team->board ^ single_move;
                 new_board |= ls(single_move, -DIRECTIONS[dir] * 2);
 
-                std::cout << pointer << std::endl;
                 buffer[pointer] = new_board;
                 pointer += 1;
 
-                std::cout << "u wott now?" << std::endl;
 
                 for (int e = 0; e < teams.size(); e++) {
                     if (e == team_id) {
@@ -146,12 +146,12 @@ int Controller::getBumps(Team* team, uint128_t* buffer, int buffer_len) {
                         break;
                     }
                 }
-                std::cout << pointer << std::endl;
 
                 buffer[pointer] = new_board;
                 pointer++;
             }
         }
+
 
         // 3 units bumping 1.
         move_grid = team->board & ls(team->board, DIRECTIONS[dir]) & ls(team->board, DIRECTIONS[dir] * 2) & ls(enemies, DIRECTIONS[dir] * 3) & ls(~taken, DIRECTIONS[dir] * 4);
@@ -161,7 +161,6 @@ int Controller::getBumps(Team* team, uint128_t* buffer, int buffer_len) {
                 new_board = team->board ^ single_move;
                 new_board |= ls(single_move, -DIRECTIONS[dir] * 3);
 
-                std::cout << "calculating 3 part: pointer " << pointer << std::endl;
                 buffer[pointer] = new_board;
                 pointer ++;
 
@@ -176,7 +175,6 @@ int Controller::getBumps(Team* team, uint128_t* buffer, int buffer_len) {
                     }
                 }
 
-                std::cout << "new pointer for 3 part: " << pointer << std::endl;
                 buffer[pointer] = new_board;
                 pointer++;
             }
@@ -187,8 +185,6 @@ int Controller::getBumps(Team* team, uint128_t* buffer, int buffer_len) {
         for (int i = 0; i < 121; i++) {
             uint128_t single_move = move_grid & ((uint128_t)1 << i);
             if (single_move > 0) {
-
-                std::cout << "finding a candidate for this stuff :)" << std::endl;
                 int enemy_id = -1;
                 for (int e = 0; e < teams.size(); e++) {
                     if (((ls(single_move, -DIRECTIONS[dir] * 3) & teams[e].board) > 0) && ((ls(single_move, -DIRECTIONS[dir] * 4) & teams[e].board) > 0)) {
@@ -236,6 +232,8 @@ int Controller::getMoves(Team* team, uint128_t* buffer, int buffer_len) {
 
         // Collect one moves
         move_grid = team->board & ls(~taken_with_borders, DIRECTIONS[dir]);
+
+
         for (int i = 0; i < 121; i++) {
             uint128_t single_move = move_grid & ((uint128_t)1 << i);
             if (single_move > 0) {
@@ -246,6 +244,7 @@ int Controller::getMoves(Team* team, uint128_t* buffer, int buffer_len) {
                 pointer += 1;
             }
         }
+
 
         // Collect double moves.
         move_grid = team->board & ls(team->board, DIRECTIONS[dir]) & ls(~taken_with_borders, DIRECTIONS[dir] * 2);
@@ -259,6 +258,7 @@ int Controller::getMoves(Team* team, uint128_t* buffer, int buffer_len) {
                 pointer += 1;
             }
         }
+
 
         // Collect sideways double move.
         for (int dir2 = 0; dir2 < 6; dir2++) {
@@ -280,20 +280,6 @@ int Controller::getMoves(Team* team, uint128_t* buffer, int buffer_len) {
                 }
             }
         }
-
-//        // Collect pushing double move.
-//        move_grid = team->board & ls(team->board, DIRECTIONS[dir]) & ls(team->board ^ taken, DIRECTIONS[dir] * 2) & ls(~taken, DIRECTIONS[dir] * 3);
-//        for (int i = 0; i < 121; i++) {
-//            uint128_t single_move = move_grid & ((uint128_t)1 << i);
-//            if (single_move > 0) {
-//                new_board = team->board ^ single_move;
-//                new_board
-//
-//                new_board |= ls(single_move, -DIRECTIONS[dir]) | ls(single_move, -DIRECTIONS[dir]*2);
-//                buffer[pointer] = new_board;
-//                pointer += 1;
-//            }
-//        }
 
         // Collect tripple moves.
         move_grid = team->board & ls(team->board, DIRECTIONS[dir]) & ls(team->board, DIRECTIONS[dir] * 2) & ~ls(taken_with_borders, DIRECTIONS[dir] * 3);
@@ -329,4 +315,20 @@ int Controller::getMoves(Team* team, uint128_t* buffer, int buffer_len) {
     }
 
     return pointer;
+}
+
+void Controller::printBoard(uint128_t board) {
+    char offset = 11;
+
+    for (int y = 0; y < 11; y++) {
+        for (int s = 0; s < offset; s++) {
+            std::cout << " ";
+        }
+
+        for (int x = 0; x < 11; x++) {
+            std::cout << ((board & ((uint128_t)1 << ((10 - y) * 11 + (10 - x)))) > 0 ? "X " : "O ");
+        }
+        std::cout << std::endl;
+        offset--;
+    }
 }

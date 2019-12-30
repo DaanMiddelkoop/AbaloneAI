@@ -40,12 +40,14 @@
 			<Add library="sfml-system" />
 		</Linker>
 		<Unit filename="include/BitBoard.h" />
+		<Unit filename="include/ai.h" />
 		<Unit filename="include/board.h" />
 		<Unit filename="include/move.h" />
 		<Unit filename="include/team.h" />
 		<Unit filename="include/tile.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/BitBoard.cpp" />
+		<Unit filename="src/ai.cpp" />
 		<Unit filename="src/board.cpp" />
 		<Unit filename="src/move.cpp" />
 		<Unit filename="src/team.cpp" />

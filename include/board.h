@@ -21,6 +21,8 @@ class Controller
 
         bool checkScoreAndCleanEdges(uint128_t* board);
 
+        void printBoard(uint128_t board);
+
 
         std::vector<Team> teams;
 };

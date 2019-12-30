@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unistd.h>
 
 #include <SFML/Graphics.hpp>
 #include "board.h"
@@ -18,13 +19,9 @@ int main()
 
     AI ai = AI();
 
+    controller.printBoard(controller.teams[0].board);
 
 
-
-    uint128_t moves[1000];
-    int amount = controller.getBumps(&controller.teams[0], moves, 1000);
-    std::cout << "Total amount found: " << amount << std::endl;
-    //controller.teams[0].board = moves[0];
 
     bool next_move = false;
     int turn = 0;
@@ -77,6 +74,7 @@ int main()
         window.clear(sf::Color(100, 100, 255));
         controller.draw(&window);
         window.display();
+        sleep(1);
 //
 //        for (int x = 0; x < 900000; x++) {
 //            std::cout << "DELAY" << std::endl;

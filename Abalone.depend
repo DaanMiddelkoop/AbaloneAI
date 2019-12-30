@@ -53,3 +53,58 @@
 	"board.h"
 	"team.h"
 
+1577746169 source:/home/daan/projects/AbaloneAI/main.cpp
+	<iostream>
+	<unistd.h>
+	<SFML/Graphics.hpp>
+	"board.h"
+	"move.h"
+	"ai.h"
+
+1577730207 /home/daan/projects/AbaloneAI/include/board.h
+	<SFML/Graphics.hpp>
+	<vector>
+	"tile.h"
+	"move.h"
+	"team.h"
+
+1577723995 /home/daan/projects/AbaloneAI/include/tile.h
+	<SFML/Graphics.hpp>
+	"team.h"
+
+1577723995 /home/daan/projects/AbaloneAI/include/team.h
+	<cstdint>
+	<SFML/Graphics.hpp>
+	"BitBoard.h"
+
+1577723995 /home/daan/projects/AbaloneAI/include/BitBoard.h
+	<stdint.h>
+
+1577723995 /home/daan/projects/AbaloneAI/include/move.h
+
+1577745363 /home/daan/projects/AbaloneAI/include/ai.h
+	"board.h"
+	"team.h"
+
+1577723995 source:/home/daan/projects/AbaloneAI/src/BitBoard.cpp
+	"BitBoard.h"
+
+1577746291 source:/home/daan/projects/AbaloneAI/src/board.cpp
+	<iostream>
+	<math.h>
+	"board.h"
+	"BitBoard.h"
+
+1577723995 source:/home/daan/projects/AbaloneAI/src/move.cpp
+	"move.h"
+
+1577723995 source:/home/daan/projects/AbaloneAI/src/team.cpp
+	"team.h"
+
+1577723995 source:/home/daan/projects/AbaloneAI/src/tile.cpp
+	"tile.h"
+
+1577747569 source:/home/daan/projects/AbaloneAI/src/ai.cpp
+	<iostream>
+	"ai.h"
+
