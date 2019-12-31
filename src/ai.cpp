@@ -8,8 +8,8 @@ AI::AI()
 }
 
 void AI::bestmove(Team* team, Team* enemy, Controller* controller, int total_team_score, int total_enemy_score, uint128_t* best_move, uint128_t* new_enemy_board) {
-    uint128_t possible_bumps[100];
-    uint128_t possible_moves[100];
+    uint128_t possible_bumps[300];
+    uint128_t possible_moves[300];
     int total_bumps = controller->getBumps(team, possible_bumps, sizeof(possible_bumps));
     int total_moves = controller->getMoves(team, possible_moves, sizeof(possible_moves));
 
@@ -40,8 +40,6 @@ void AI::bestmove(Team* team, Team* enemy, Controller* controller, int total_tea
     for (int m = 0; m < total_moves; m++) {
         team->board = possible_moves[m];
 
-        std::cout << "Testing possible moves: " << std::endl;
-        controller->printBoard(team->board);
 
         int score = -AI::minimax(enemy, team, controller, total_enemy_score, total_team_score, 0);
 
@@ -58,7 +56,7 @@ void AI::bestmove(Team* team, Team* enemy, Controller* controller, int total_tea
 
 
 int AI::minimax(Team* team, Team* enemy, Controller* controller, int total_team_score, int total_enemy_score, int depth) {
-    if (depth > 1) {
+    if (depth + 1 >= 5) {
         return 0;
     }
 
@@ -68,8 +66,8 @@ int AI::minimax(Team* team, Team* enemy, Controller* controller, int total_team_
     }
 
 
-    uint128_t possible_bumps[100];
-    uint128_t possible_moves[100];
+    uint128_t possible_bumps[300];
+    uint128_t possible_moves[300];
     int total_bumps = controller->getBumps(team, possible_bumps, sizeof(possible_bumps));
     int total_moves = controller->getMoves(team, possible_moves, sizeof(possible_moves));
 

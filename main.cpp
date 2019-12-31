@@ -67,14 +67,13 @@ int main()
             std::cout << "calculated move." << std::endl;
 
             turn ^= 1;
-            next_move != next_move;
+            next_move = false;
         }
 
 
         window.clear(sf::Color(100, 100, 255));
         controller.draw(&window);
         window.display();
-        sleep(1);
 //
 //        for (int x = 0; x < 900000; x++) {
 //            std::cout << "DELAY" << std::endl;

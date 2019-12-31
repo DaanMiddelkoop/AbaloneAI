@@ -53,7 +53,7 @@
 	"board.h"
 	"team.h"
 
-1577746169 source:/home/daan/projects/AbaloneAI/main.cpp
+1577749402 source:/home/daan/projects/AbaloneAI/main.cpp
 	<iostream>
 	<unistd.h>
 	<SFML/Graphics.hpp>
@@ -89,7 +89,7 @@
 1577723995 source:/home/daan/projects/AbaloneAI/src/BitBoard.cpp
 	"BitBoard.h"
 
-1577746291 source:/home/daan/projects/AbaloneAI/src/board.cpp
+1577751734 source:/home/daan/projects/AbaloneAI/src/board.cpp
 	<iostream>
 	<math.h>
 	"board.h"
@@ -104,7 +104,7 @@
 1577723995 source:/home/daan/projects/AbaloneAI/src/tile.cpp
 	"tile.h"
 
-1577747569 source:/home/daan/projects/AbaloneAI/src/ai.cpp
+1577749736 source:/home/daan/projects/AbaloneAI/src/ai.cpp
 	<iostream>
 	"ai.h"
 
