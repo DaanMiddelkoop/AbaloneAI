@@ -123,14 +123,14 @@ int Controller::getBumps(Team* team, uint128_t* buffer, int buffer_len) {
 
     // Bump 2.
     for (int dir = 0; dir < 6; dir++) {
-        move_grid = team->board & ls(team->board, DIRECTIONS[dir]) & ls(enemies, DIRECTIONS[dir] * 2) & ls(~taken, DIRECTIONS[dir] * 3);
+        move_grid = team->board & ls(team->board, DIRECTIONS[dir]) & ls(enemies, (DIRECTIONS[dir] * 2)) & ls(~taken, (DIRECTIONS[dir] * 3));
         while (move_grid > (uint128_t)0) {
             uint128_t next_move_grid = move_grid & (move_grid - 1);
             uint128_t single_move = move_grid ^ next_move_grid;
             move_grid = next_move_grid;
 
             new_board = team->board ^ single_move;
-            new_board |= ls(single_move, -DIRECTIONS[dir] * 2);
+            new_board |= ls(single_move, (-DIRECTIONS[dir] * 2));
 
             buffer[pointer] = new_board;
             pointer += 1;
@@ -141,9 +141,9 @@ int Controller::getBumps(Team* team, uint128_t* buffer, int buffer_len) {
                     continue;
                 }
 
-                if ((single_move & ls(teams[e].board, DIRECTIONS[dir] * 2)) > (uint128_t)0) {
-                    new_board = teams[e].board ^ ls(single_move, -DIRECTIONS[dir] * 2);
-                    new_board |= ls(single_move, -DIRECTIONS[dir] * 3);
+                if ((single_move & ls(teams[e].board, (DIRECTIONS[dir] * 2))) > (uint128_t)0) {
+                    new_board = teams[e].board ^ ls(single_move, (-DIRECTIONS[dir] * 2));
+                    new_board |= ls(single_move, (-DIRECTIONS[dir] * 3));
                     break;
                 }
             }
@@ -154,14 +154,14 @@ int Controller::getBumps(Team* team, uint128_t* buffer, int buffer_len) {
 
 
         // 3 units bumping 1.
-        move_grid = team->board & ls(team->board, DIRECTIONS[dir]) & ls(team->board, DIRECTIONS[dir] * 2) & ls(enemies, DIRECTIONS[dir] * 3) & ls(~taken, DIRECTIONS[dir] * 4);
+        move_grid = team->board & ls(team->board, DIRECTIONS[dir]) & ls(team->board, (DIRECTIONS[dir] * 2)) & ls(enemies, (DIRECTIONS[dir] * 3)) & ls(~taken, (DIRECTIONS[dir] * 4));
         while (move_grid > (uint128_t)0) {
             uint128_t next_move_grid = move_grid & (move_grid - 1);
             uint128_t single_move = move_grid ^ next_move_grid;
             move_grid = next_move_grid;
 
             new_board = team->board ^ single_move;
-            new_board |= ls(single_move, -DIRECTIONS[dir] * 3);
+            new_board |= ls(single_move, (-DIRECTIONS[dir] * 3));
 
             buffer[pointer] = new_board;
             pointer ++;
@@ -170,9 +170,9 @@ int Controller::getBumps(Team* team, uint128_t* buffer, int buffer_len) {
                 if (e == team_id) {
                     continue;
                 }
-                if ((single_move & ls(teams[e].board, DIRECTIONS[dir] * 3)) > (uint128_t)0) {
-                    new_board = teams[e].board ^ ls(single_move, -DIRECTIONS[dir] * 3);
-                    new_board |= ls(single_move, -DIRECTIONS[dir] * 4);
+                if ((single_move & ls(teams[e].board, (DIRECTIONS[dir] * 3))) > (uint128_t)0) {
+                    new_board = teams[e].board ^ ls(single_move, (-DIRECTIONS[dir] * 3));
+                    new_board |= ls(single_move, (-DIRECTIONS[dir] * 4));
                     break;
                 }
             }
@@ -190,7 +190,7 @@ int Controller::getBumps(Team* team, uint128_t* buffer, int buffer_len) {
 
             int enemy_id = -1;
             for (int e = 0; e < teams.size(); e++) {
-                if (((ls(single_move, -DIRECTIONS[dir] * 3) & teams[e].board) > 0) && ((ls(single_move, -DIRECTIONS[dir] * 4) & teams[e].board) > 0)) {
+                if (((ls(single_move, (-DIRECTIONS[dir] * 3)) & teams[e].board) > 0) && ((ls(single_move, (-DIRECTIONS[dir] * 4)) & teams[e].board) > 0)) {
                     enemy_id = e;
                 }
             }
@@ -201,14 +201,14 @@ int Controller::getBumps(Team* team, uint128_t* buffer, int buffer_len) {
 
             // Set board.
             new_board = team->board ^ single_move;
-            new_board |= ls(single_move, -DIRECTIONS[dir] * 3);
+            new_board |= ls(single_move, (-DIRECTIONS[dir] * 3));
 
             buffer[pointer] = new_board;
             pointer ++;
 
             // Set enemy board.
-            new_board = teams[enemy_id].board ^ ls(single_move, -DIRECTIONS[dir] * 3);
-            new_board |= ls(single_move, -DIRECTIONS[dir] * 5);
+            new_board = teams[enemy_id].board ^ ls(single_move, (-DIRECTIONS[dir] * 3));
+            new_board |= ls(single_move, (-DIRECTIONS[dir] * 5));
 
             buffer[pointer] = new_board;
             pointer++;
@@ -249,25 +249,43 @@ int Controller::getMoves(Team* team, uint128_t* buffer, int buffer_len) {
 
 
         // Collect double moves.
-        move_grid = team->board & ls(team->board, DIRECTIONS[dir]) & ls(~taken_with_borders, DIRECTIONS[dir] * 2);
+        move_grid = team->board & ls(team->board, DIRECTIONS[dir]) & ls(~taken_with_borders, (DIRECTIONS[dir] * 2));
         while (move_grid > (uint128_t)0) {
             uint128_t next_move_grid = move_grid & (move_grid - 1);
             uint128_t single_move = move_grid ^ next_move_grid;
             move_grid = next_move_grid;
             new_board = team->board ^ single_move;
 
-            new_board |= ls(single_move, -DIRECTIONS[dir]) | ls(single_move, -DIRECTIONS[dir]*2);
+            new_board |= ls(single_move, -DIRECTIONS[dir]) | ls(single_move, (-DIRECTIONS[dir]*2));
             buffer[pointer] = new_board;
             pointer += 1;
         }
 
 
+
+        // Collect tripple moves.
+        move_grid = team->board & ls(team->board, DIRECTIONS[dir]) & ls(team->board, (DIRECTIONS[dir] * 2)) & ~ls(taken_with_borders, (DIRECTIONS[dir] * 3));
+        while (move_grid > (uint128_t)0) {
+            uint128_t next_move_grid = move_grid & (move_grid - 1);
+            uint128_t single_move = move_grid ^ next_move_grid;
+            move_grid = next_move_grid;
+            new_board = team->board ^ single_move;
+
+            new_board |= ls(single_move, (-DIRECTIONS[dir])) | ls(single_move, (-DIRECTIONS[dir] * 2)) | ls(single_move, (-DIRECTIONS[dir] * 3));
+            buffer[pointer] = new_board;
+            pointer += 1;
+        }
+
+        if (dir > 2) {
+            continue;
+        }
+
+
+
         // Collect sideways double move.
-        for (int dir2 = 0; dir2 < 6; dir2++) {
-            if (dir2 == dir || dir > 2) {
-                continue;
-            }
-            move_grid = team->board & ls(team->board, DIRECTIONS[dir]) & ls(~taken_with_borders, DIRECTIONS[dir2]) & ls(~taken_with_borders, DIRECTIONS[dir] + DIRECTIONS[dir2]);
+        for (int dir2 = dir + 1; (dir2 % 6) != dir; dir2 = (dir2 + 1) % 6) {
+            move_grid = team->board & ls(team->board, DIRECTIONS[dir]) & ls(~taken_with_borders, DIRECTIONS[dir2]) & ls(~taken_with_borders, (DIRECTIONS[dir] + DIRECTIONS[dir2]));
+
 
             while (move_grid > (uint128_t)0) {
                 uint128_t next_move_grid = move_grid & (move_grid - 1);
@@ -276,40 +294,26 @@ int Controller::getMoves(Team* team, uint128_t* buffer, int buffer_len) {
 
                 new_board = team->board ^ single_move;
                 new_board ^= ls(single_move, -DIRECTIONS[dir]);
-                new_board |= ls(single_move, -DIRECTIONS[dir2]) | ls(single_move, -DIRECTIONS[dir] - DIRECTIONS[dir2]);
+                new_board |= ls(single_move, -DIRECTIONS[dir2]) | ls(single_move, (-DIRECTIONS[dir] - DIRECTIONS[dir2]));
                 buffer[pointer] = new_board;
 
                 pointer += 1;
             }
         }
 
-        // Collect tripple moves.
-        move_grid = team->board & ls(team->board, DIRECTIONS[dir]) & ls(team->board, DIRECTIONS[dir] * 2) & ~ls(taken_with_borders, DIRECTIONS[dir] * 3);
-        while (move_grid > (uint128_t)0) {
-            uint128_t next_move_grid = move_grid & (move_grid - 1);
-            uint128_t single_move = move_grid ^ next_move_grid;
-            move_grid = next_move_grid;
-            new_board = team->board ^ single_move;
 
-            new_board |= ls(single_move, -DIRECTIONS[dir]) | ls(single_move, -DIRECTIONS[dir] * 2) | ls(single_move, -DIRECTIONS[dir] * 3);
-            buffer[pointer] = new_board;
-            pointer += 1;
-        }
         // Collect sideways tripple moves.
-        for(int dir2 = 0; dir2 < 6; dir2++) {
-            if (dir2 == dir || dir > 2) {
-                continue;
-            }
+        for (int dir2 = dir + 1; (dir2 % 6) != dir; (++dir2)%=6) {
 
 
-            move_grid = team->board & ls(team->board, DIRECTIONS[dir]) & ls(team->board, DIRECTIONS[dir] * 2) & ls(~taken_with_borders, DIRECTIONS[dir2]) & ls(~taken_with_borders, DIRECTIONS[dir] + DIRECTIONS[dir2]) & ls(~taken_with_borders, DIRECTIONS[dir] * 2 + DIRECTIONS[dir2]);
+            move_grid = team->board & ls(team->board, DIRECTIONS[dir]) & ls(team->board, (DIRECTIONS[dir] * 2)) & ls(~taken_with_borders, DIRECTIONS[dir2]) & ls(~taken_with_borders, (DIRECTIONS[dir] + DIRECTIONS[dir2])) & ls(~taken_with_borders, (DIRECTIONS[dir] * 2 + DIRECTIONS[dir2]));
             while (move_grid > (uint128_t)0) {
                 uint128_t next_move_grid = move_grid & (move_grid - 1);
                 uint128_t single_move = move_grid ^ next_move_grid;
                 move_grid = next_move_grid;
 
-                new_board = team->board ^ (single_move | ls(single_move, -DIRECTIONS[dir]) | ls(single_move, -DIRECTIONS[dir] * 2));
-                new_board |= ls(single_move, -DIRECTIONS[dir2]) | ls(single_move, -DIRECTIONS[dir] - DIRECTIONS[dir2]) | ls(single_move, -(DIRECTIONS[dir] * 2) - DIRECTIONS[dir2]);
+                new_board = team->board ^ (single_move | ls(single_move, -DIRECTIONS[dir]) | ls(single_move, (-DIRECTIONS[dir] * 2)));
+                new_board |= ls(single_move, -DIRECTIONS[dir2]) | ls(single_move, (-DIRECTIONS[dir] - DIRECTIONS[dir2])) | ls(single_move, (-(DIRECTIONS[dir] * 2) - DIRECTIONS[dir2]));
 
                 buffer[pointer] = new_board;
                 pointer += 1;

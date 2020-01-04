@@ -21,6 +21,9 @@ int main()
 
     controller.printBoard(controller.teams[0].board);
 
+    uint128_t moves[1000];
+    std::cout << "number of possible moves: " << controller.getMoves(&controller.teams[0], moves, 1000) << std::endl;
+
 
 
     bool next_move = false;
@@ -74,6 +77,7 @@ int main()
         window.clear(sf::Color(100, 100, 255));
         controller.draw(&window);
         window.display();
+        sleep(1);
 //
 //        for (int x = 0; x < 900000; x++) {
 //            std::cout << "DELAY" << std::endl;
