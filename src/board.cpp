@@ -6,9 +6,9 @@
 
 typedef unsigned __int128 uint128_t;
 
-static const uint128_t P1_SETUP = (uint128_t)0b111110000001111110000000111 << 82;
-static const uint128_t P2_SETUP = (uint128_t)0b11100000001111110000001111100 << 10;
-static uint128_t EDGES = ((uint128_t)0xFFFE0FC0F80F00E << 64) | 0xE01E03E07E0FFF;
+static const uint128_t P1_SETUP = (uint128_t)0b1111100000111111000000111 << 80;
+static const uint128_t P2_SETUP = (uint128_t)0b111000000111111000001111100 << 14;
+static uint128_t EDGES = ((uint128_t)0x1FFFE0F81E03806 << 64) | 0xC0380F03E0FFFF;
 
 static const int UP_LEFT = -12;
 static const int UP_RIGHT = -11;
@@ -73,7 +73,7 @@ void Controller::setup() {
 //    int row_sizes[] = {6, 7, 8, 9, 10, 11, 10, 9, 8, 7, 6};
 //    for (int x = 0; x < 11; x++) {
 //        for (int y = 0; y < 11; y++) {
-//            if (((x == 0 && y <= 4) || (x < y - 4 && y > 4)|| y == 0 || (x >= row_sizes[y] - 1 && y <= 4) || (x == 10 && y > 4) || y == 10)) {
+//            if ((x == 0) || (y == 0) || (x == 10) || (y == 10) || (x + y < 6) || (x + y > 14)) {
 //                EDGES |= (uint128_t)1 << (10 - y) * 11 + (10 - x);
 //            }
 //        }
@@ -325,7 +325,7 @@ int Controller::getMoves(Team* team, uint128_t* buffer, int buffer_len) {
 }
 
 void Controller::printBoard(uint128_t board) {
-    char offset = 11;
+    char offset = 0;
 
     for (int y = 0; y < 11; y++) {
         for (int s = 0; s < offset; s++) {
@@ -336,6 +336,6 @@ void Controller::printBoard(uint128_t board) {
             std::cout << ((board & ((uint128_t)1 << ((10 - y) * 11 + (10 - x)))) > 0 ? "X " : "O ");
         }
         std::cout << std::endl;
-        offset--;
+        offset++;
     }
 }

@@ -56,8 +56,9 @@ void AI::bestmove(Team* team, Team* enemy, Controller* controller, int total_tea
 
 
 int AI::minimax(Team* team, Team* enemy, Controller* controller, int total_team_score, int total_enemy_score, int depth) {
-    if (depth + 1 >= 5) {
+    if (depth + 1 >= 3) {
         return 0;
+        //return calculateCenterSquareError();
     }
 
 

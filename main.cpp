@@ -19,10 +19,8 @@ int main()
 
     AI ai = AI();
 
-    controller.printBoard(controller.teams[0].board);
-
     uint128_t moves[1000];
-    std::cout << "number of possible moves: " << controller.getMoves(&controller.teams[0], moves, 1000) << std::endl;
+    //std::cout << "number of possible moves: " << controller.getMoves(&controller.teams[0], moves, 1000) << std::endl;
 
 
 
