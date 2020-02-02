@@ -53,9 +53,11 @@
 	"board.h"
 	"team.h"
 
-1577814617 source:/home/daan/projects/AbaloneAI/main.cpp
+1580645331 source:/home/daan/projects/AbaloneAI/main.cpp
 	<iostream>
 	<unistd.h>
+	<sstream>
+	<string>
 	<SFML/Graphics.hpp>
 	"board.h"
 	"move.h"
@@ -82,16 +84,18 @@
 
 1577723995 /home/daan/projects/AbaloneAI/include/move.h
 
-1577745363 /home/daan/projects/AbaloneAI/include/ai.h
+1580599338 /home/daan/projects/AbaloneAI/include/ai.h
 	"board.h"
 	"team.h"
 
 1577723995 source:/home/daan/projects/AbaloneAI/src/BitBoard.cpp
 	"BitBoard.h"
 
-1577814548 source:/home/daan/projects/AbaloneAI/src/board.cpp
+1580648902 source:/home/daan/projects/AbaloneAI/src/board.cpp
 	<iostream>
 	<math.h>
+	<string>
+	<assert.h>
 	"board.h"
 	"BitBoard.h"
 
@@ -104,7 +108,9 @@
 1577723995 source:/home/daan/projects/AbaloneAI/src/tile.cpp
 	"tile.h"
 
-1577749736 source:/home/daan/projects/AbaloneAI/src/ai.cpp
+1580648048 source:/home/daan/projects/AbaloneAI/src/ai.cpp
 	<iostream>
+	<unordered_map>
 	"ai.h"
+	<assert.h>
 

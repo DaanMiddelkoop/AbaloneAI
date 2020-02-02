@@ -1,5 +1,7 @@
 #include <iostream>
 #include <math.h>
+#include <string>
+#include <assert.h>
 
 #include "board.h"
 #include "BitBoard.h"
@@ -10,13 +12,16 @@ static const uint128_t P1_SETUP = (uint128_t)0b1111100000111111000000111 << 80;
 static const uint128_t P2_SETUP = (uint128_t)0b111000000111111000001111100 << 14;
 static uint128_t EDGES = ((uint128_t)0x1FFFE0F81E03806 << 64) | 0xC0380F03E0FFFF;
 
-static const int UP_LEFT = -12;
-static const int UP_RIGHT = -11;
+static const int UP_LEFT = -1;
+static const int UP_RIGHT = -10;
 static const int RIGHT = 1;
-static const int DOWN_RIGHT = 12;
-static const int DOWN_LEFT = 11;
+static const int DOWN_RIGHT = 11;
+static const int DOWN_LEFT = 10;
 static const int LEFT = -1;
 
+int count_bits2(uint128_t board) {
+    return __builtin_popcountll(board) + __builtin_popcountll(board >> 64);
+}
 
 static const int DIRECTIONS[6] = {UP_LEFT, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN_LEFT, LEFT};
 
@@ -30,21 +35,25 @@ void Controller::draw(sf::RenderWindow* window) {
     sf::CircleShape shape(10.f);
 
 
-    int x_offset = 100;
+    int x_offset = 0;
+
+
 
     shape.setFillColor(sf::Color(139, 69, 19));
 
-
     for (int y = 0; y < 11; y++) {
         for (int x = 0; x < 11; x++) {
-            shape.setPosition(sf::Vector2f((x * 20) + x_offset, y * 20 + 100));
-            window->draw(shape);
+
+            if (~EDGES & ((uint128_t)1 << ((10 - y) * 11 + (10 - x) ))) {
+                shape.setPosition(sf::Vector2f((x * 20) + x_offset, y * 20 + 100));
+                window->draw(shape);
+            }
         }
 
-        x_offset -= 10;
+        x_offset += 10;
     }
 
-    x_offset = 100;
+    x_offset = 0;
 
     for (int y = 0; y < 11; y++) {
         for (int x = 0; x < 11; x++) {
@@ -60,8 +69,27 @@ void Controller::draw(sf::RenderWindow* window) {
             }
 
         }
-        x_offset -= 10;
+        x_offset += 10;
     }
+
+
+    sf::Font font;
+    if (!font.loadFromFile("Scotland.otf"))
+    {
+        assert(false);
+    }
+
+    sf::Text text;
+    text.setFont(font);
+    text.setString("P0: " + std::to_string(count_bits2(teams[0].board)));
+    text.setCharacterSize(40);
+    text.setPosition(400, 100);
+    text.setFillColor(sf::Color(0, 0, 0));
+    window->draw(text);
+
+    text.setString("P1: " + std::to_string(count_bits2(teams[1].board)));
+    text.setPosition(400, 160);
+    window->draw(text);
 }
 void Controller::addTeam(sf::Color color) {
     this->teams.push_back(Team(color));
@@ -220,7 +248,14 @@ int Controller::getBumps(Team* team, uint128_t* buffer, int buffer_len) {
     return pointer;
 }
 
-int Controller::getMoves(Team* team, uint128_t* buffer, int buffer_len) {
+int Controller::getMoves(Team* team, uint128_t* buffer, const int buffer_len) {
+    int team_id = team - &teams[0];
+    int enemy_id = team_id == 0 ? 1 : 0;
+
+    for (int i = 0; i < buffer_len / 2; i++) {
+        buffer[i * 2 + 1] = teams[enemy_id].board;
+    }
+
     int pointer = 0;
     uint128_t taken = 0;
     for (int t = 0; t < teams.size(); t++) {
@@ -244,7 +279,7 @@ int Controller::getMoves(Team* team, uint128_t* buffer, int buffer_len) {
             new_board |= ls(single_move, -DIRECTIONS[dir]);
 
             buffer[pointer] = new_board;
-            pointer += 1;
+            pointer += 2;
         }
 
 
@@ -258,7 +293,7 @@ int Controller::getMoves(Team* team, uint128_t* buffer, int buffer_len) {
 
             new_board |= ls(single_move, -DIRECTIONS[dir]) | ls(single_move, (-DIRECTIONS[dir]*2));
             buffer[pointer] = new_board;
-            pointer += 1;
+            pointer += 2;
         }
 
 
@@ -273,7 +308,7 @@ int Controller::getMoves(Team* team, uint128_t* buffer, int buffer_len) {
 
             new_board |= ls(single_move, (-DIRECTIONS[dir])) | ls(single_move, (-DIRECTIONS[dir] * 2)) | ls(single_move, (-DIRECTIONS[dir] * 3));
             buffer[pointer] = new_board;
-            pointer += 1;
+            pointer += 2;
         }
 
         if (dir > 2) {
@@ -297,7 +332,7 @@ int Controller::getMoves(Team* team, uint128_t* buffer, int buffer_len) {
                 new_board |= ls(single_move, -DIRECTIONS[dir2]) | ls(single_move, (-DIRECTIONS[dir] - DIRECTIONS[dir2]));
                 buffer[pointer] = new_board;
 
-                pointer += 1;
+                pointer += 2;
             }
         }
 
@@ -316,7 +351,7 @@ int Controller::getMoves(Team* team, uint128_t* buffer, int buffer_len) {
                 new_board |= ls(single_move, -DIRECTIONS[dir2]) | ls(single_move, (-DIRECTIONS[dir] - DIRECTIONS[dir2])) | ls(single_move, (-(DIRECTIONS[dir] * 2) - DIRECTIONS[dir2]));
 
                 buffer[pointer] = new_board;
-                pointer += 1;
+                pointer += 2;
             }
         }
     }
@@ -329,13 +364,13 @@ void Controller::printBoard(uint128_t board) {
 
     for (int y = 0; y < 11; y++) {
         for (int s = 0; s < offset; s++) {
-            std::cout << " ";
+            std::cerr << " ";
         }
 
         for (int x = 0; x < 11; x++) {
-            std::cout << ((board & ((uint128_t)1 << ((10 - y) * 11 + (10 - x)))) > 0 ? "X " : "O ");
+            std::cerr << ((board & ((uint128_t)1 << ((10 - y) * 11 + (10 - x)))) > 0 ? "X " : "O ");
         }
-        std::cout << std::endl;
+        std::cerr << std::endl;
         offset++;
     }
 }
