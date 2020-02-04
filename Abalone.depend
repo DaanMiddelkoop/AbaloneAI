@@ -91,7 +91,7 @@
 1577723995 source:/home/daan/projects/AbaloneAI/src/BitBoard.cpp
 	"BitBoard.h"
 
-1580648902 source:/home/daan/projects/AbaloneAI/src/board.cpp
+1580649139 source:/home/daan/projects/AbaloneAI/src/board.cpp
 	<iostream>
 	<math.h>
 	<string>
@@ -108,7 +108,7 @@
 1577723995 source:/home/daan/projects/AbaloneAI/src/tile.cpp
 	"tile.h"
 
-1580648048 source:/home/daan/projects/AbaloneAI/src/ai.cpp
+1580748302 source:/home/daan/projects/AbaloneAI/src/ai.cpp
 	<iostream>
 	<unordered_map>
 	"ai.h"

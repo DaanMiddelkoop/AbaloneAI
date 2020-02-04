@@ -6,7 +6,9 @@
 
 static int ROW_SIZE = 11;
 
-const char MAX_DEPTH = 4;
+const char MAX_DEPTH = 5;
+
+int counter;
 
 #define ls(X, Y) ((Y) > 0 ? (X) >> (Y) : (X) << (-Y))
 
@@ -78,6 +80,10 @@ const __uint128_t RING3 =
 
 const uint128_t rings[] = {RING0, RING1, RING2, RING3, OUTER_RING};
 
+struct TranspositionEntry;
+bool compare_moves(const TranspositionEntry move1, const TranspositionEntry move2);
+
+
 struct TranspositionEntry {
     uint128_t team;
     uint128_t enemy;
@@ -85,6 +91,11 @@ struct TranspositionEntry {
     bool operator==(const TranspositionEntry &other) const
   { return (team == other.team
             && enemy == other.enemy);
+  }
+
+  bool operator<(const TranspositionEntry &rhs) const
+  {
+    return compare_moves(*this, rhs);
   }
 };
 
@@ -172,6 +183,30 @@ void add_to_transposition_table(uint128_t team, uint128_t enemy, bool alpha_brea
     transposition_table[te] = tr;
 }
 
+bool compare_moves(TranspositionEntry move1, TranspositionEntry move2) {
+    TranspositionResult result;
+    int score1 = -10000;
+    int score2 = -10000;
+
+    if (transposition_lookup(move1.team, move1.enemy, &result)) {
+        score1 = result.score;
+    }
+
+    if (transposition_lookup(move2.team, move2.enemy, &result)) {
+        score2 = result.score;
+    }
+
+    //return heuristic_score(move1.team, move1.enemy) < heuristic_score(move2.team, move2.enemy);
+
+    return (score1 < score2);
+}
+
+void sort_moves(uint128_t* possible_moves, int buffer_len) {
+    TranspositionEntry* moves = (TranspositionEntry*)possible_moves;
+
+    std::sort(moves, moves + buffer_len);
+}
+
 
 
 
@@ -186,14 +221,17 @@ void AI::bestmove(Team* team, Team* enemy, Controller* controller, int total_tea
     int total_moves = controller->getBumps(team, possible_moves, 600);
     total_moves += controller->getMoves(team, possible_moves + (total_moves), 600 - (total_moves));
 
+    sort_moves(possible_moves, total_moves / 2);
+
     std::cerr << "Score of current board before making a move " << heuristic_score(team->board, enemy->board) << std::endl;
 
     uint128_t currentBoard = team->board;
     uint128_t enemyBoard = enemy->board;
 
 
-    for (int depth = 1; depth <= MAX_DEPTH; depth++) {
+    for (int depth = 1; depth <= MAX_DEPTH; depth ++) {
         int best_score = -999999;
+        counter = 0;
 
         if (total_moves <= 0) {
             std::cerr << "No moves to start wit" << std::endl;
@@ -219,6 +257,8 @@ void AI::bestmove(Team* team, Team* enemy, Controller* controller, int total_tea
 
         std::cerr << "move score: " << best_score << std::endl;
 
+        std::cerr << "Amount of lookups" << counter << std::endl;
+
         team->board = currentBoard;
         enemy->board = enemyBoard;
     }
@@ -229,7 +269,9 @@ int AI::minimax(Team* team, Team* enemy, Controller* controller, int total_team_
     // Check transposition table.
     int originalAlpha = alpha;
 
+
     TranspositionResult tr_result;
+    tr_result.depth = 0;
     if (transposition_lookup(team->board, enemy->board, &tr_result) && (tr_result.depth >= depth)) {
 
         if (tr_result.alphabetabreak == 0) {
@@ -240,8 +282,9 @@ int AI::minimax(Team* team, Team* enemy, Controller* controller, int total_team_
             beta = std::min(beta, tr_result.score);
         }
 
-        if (alpha > beta) {
+        if (alpha >= beta) {
 
+            counter++;
             //std::cerr << depth << " Found the move within the transposition table" << std::endl;
             return tr_result.score;
         }
@@ -264,6 +307,10 @@ int AI::minimax(Team* team, Team* enemy, Controller* controller, int total_team_
     int total_moves = controller->getBumps(team, possible_moves, 1000);
     total_moves += controller->getMoves(team, possible_moves + (total_moves), 1000 - (total_moves));
 
+    if (tr_result.depth > 0) {
+        sort_moves(possible_moves, total_moves / 2);
+    }
+
     assert(total_moves < 1000);
 
     uint128_t currentBoard = team->board;
@@ -285,6 +332,7 @@ int AI::minimax(Team* team, Team* enemy, Controller* controller, int total_team_
             if (alpha >= beta) {
                 team->board = currentBoard;
                 enemy->board = enemyBoard;
+                counter++;
 
                 add_to_transposition_table(team->board, enemy->board, score <= originalAlpha, !(score <= originalAlpha) && (score >= beta), score, depth);
                 return score;
